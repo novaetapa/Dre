@@ -3,126 +3,794 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prestação de Contas</title>
+    <title>Prestação de Contas e DRE</title>
     <style>
         body {
-            background: linear-gradient(to right, #0000ff, #ffff00);
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 20px;
-        }
-        h2 {
-            background-color: #ddd;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .section {
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .field {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
+            flex-direction: column;
+            align-items: center;
+            background-color: #e0e0e0; /* Cinza claro */
         }
-        .field input {
-            width: 25%;
-            padding: 5px;
+
+        h1 {
+            margin: 20px;
+            color: #4caf50; /* Verde */
         }
-        .field button {
-            width: 10%;
-            padding: 5px;
-            background-color: grey;
+
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #007bff; /* Azul */
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
+            margin-bottom: 20px;
         }
-        .field button:hover {
-            background-color: darkgrey;
+
+        button:hover {
+            background-color: #0056b3;
         }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin: 5px 0;
+        }
+
+        input, select, span {
+            margin: 5px 0 15px 0;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #data-tables > div {
+            margin: 20px 0;
+            padding: 20px;
+            background: #e0f2f1; /* Verde claro */
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        td .reset-button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #dre-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #e0f2f1; /* Verde claro */
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        #dre-container table {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+
+        #dre-container td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: right;
+        }
+
+        #dre-container .label {
+            text-align: left;
+            font-weight: bold;
+            background-color: #e0e0e0; /* Cinza claro */
+        }
+
         @media (max-width: 768px) {
-            .field input, .field button {
-                width: 45%;
+            input, select, span {
+                width: 100%;
             }
-            .field {
-                flex-direction: column;
+
+            th, td {
+                font-size: 12px;
+                padding: 5px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .reset-button {
+                padding: 8px;
+            }
+
+            #dre-container td {
+                padding: 5px;
+                font-size: 12px;
+            }
+
+            #dre-container .label {
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Prestação de Contas</h2>
+    <div id="login-page" class="page active">
+        <h1>Login</h1>
+        <form id="login-form">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
 
-        <div id="receita-vendas" class="section">
-            <h3>Receita de Vendas</h3>
-            <div class="field">
-                <input type="text" id="receita-descricao" placeholder="Descrição">
-                <input type="number" id="receita-quantidade" placeholder="Quantidade">
-                <input type="number" id="receita-valor" placeholder="Valor Unitário">
-                <input type="number" id="receita-total" placeholder="Total" readonly>
-                <button onclick="resetSection('receita-vendas')">Reset</button>
+    <div id="prestacao-contas" class="page">
+        <h1>Prestação de Contas</h1>
+        <button id="to-dre-button">Ver DRE</button>
+        <button id="save-button">Salvar</button>
+        <div id="data-tables">
+            <div id="receita-vendas">
+                <h2>Receita de Vendas</h2>
+                <form class="item-form" data-type="receita_vendas">
+                    <label for="description">Descrição:</label>
+                    <input type="text" class="description" required>
+                    <label for="quantity">Quantidade:</label>
+                    <input type="number" class="quantity" required>
+                    <label for="unit-price">Valor Unitário:</label>
+                    <input type="number" class="unit-price" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                            <th>Reset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="receita-vendas-rows">
+                        <!-- Receita de Vendas inseridas aparecerão aqui -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total Receita de Vendas</th>
+                            <th id="total-receita-vendas">0</th>
+                            <th><button class="reset-button" data-type="receita_vendas">Resetar</button></th>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
-        </div>
-
-        <!-- Repeat similar sections for other categories -->
-        
-        <!-- DRE Section -->
-        <div id="dre" class="section">
-            <h2>DRE (Demonstração do Resultado do Exercício)</h2>
-            <div class="field">
-                <label>Receita de Vendas</label>
-                <input type="number" id="dre-receita-vendas" readonly>
+            <div id="cmv">
+                <h2>Custo das Mercadorias Vendidas (CMV)</h2>
+                <form class="item-form" data-type="cmv">
+                    <label for="description">Descrição:</label>
+                    <input type="text" class="description" required>
+                    <label for="quantity">Quantidade:</label>
+                    <input type="number" class="quantity" required>
+                    <label for="unit-price">Valor Unitário:</label>
+                    <input type="number" class="unit-price" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                            <th>Reset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cmv-rows">
+                        <!-- CMV inseridas aparecerão aqui -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total CMV</th>
+                            <th id="total-cmv">0</th>
+                            <th><button class="reset-button" data-type="cmv">Resetar</button></th>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
-            <!-- Repeat for other summary fields -->
-            <div class="field">
-                <label>Resultado Líquido</label>
-                <input type="number" id="dre-resultado-liquido" readonly>
+            <div id="despesas-comerciais">
+                <h2>Despesas Comerciais</h2>
+                <form class="item-form" data-type="despesas_comerciais">
+                    <label for="description">Descrição:</label>
+                    <input type="text" class="description" required>
+                    <label for="quantity">Quantidade:</label>
+                    <input type="number" class="quantity" required>
+                    <label for="unit-price">Valor Unitário:</label>
+                    <input type="number" class="unit-price" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                            <th>Reset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="despesas-comerciais-rows">
+                        <!-- Despesas Comerciais inseridas aparecerão aqui -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total Despesas Comerciais</th>
+                            <th id="total-despesas-comerciais">0</th>
+                            <th><button class="reset-button" data-type="despesas_comerciais">Resetar</button></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div id="despesas-administrativas">
+                <h2>Despesas Administrativas</h2>
+                <form class="item-form" data-type="despesas_administrativas">
+                    <label for="description">Descrição:</label>
+                    <input type="text" class="description" required>
+                    <label for="quantity">Quantidade:</label>
+                    <input type="number" class="quantity" required>
+                    <label for="unit-price">Valor Unitário:</label>
+                    <input type="number" class="unit-price" required>
+                    <button type="submit">Adicionar</button</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                            <th>Reset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="despesas-administrativas-rows">
+                        <!-- Despesas Administrativas inseridas aparecerão aqui -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total Despesas Administrativas</th>
+                            <th id="total-despesas-administrativas">0</th>
+                            <th><button class="reset-button" data-type="despesas_administrativas">Resetar</button></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div id="saldo-financeiro">
+                <h2>Saldo Financeiro</h2>
+                <form class="item-form" data-type="saldo_financeiro">
+                    <label for="description">Descrição:</label>
+                    <input type="text" class="description" required>
+                    <label for="quantity">Quantidade:</label>
+                    <input type="number" class="quantity" required>
+                    <label for="unit-price">Valor Unitário:</label>
+                    <input type="number" class="unit-price" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                            <th>Reset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="saldo-financeiro-rows">
+                        <!-- Saldo Financeiro inseridas aparecerão aqui -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total Saldo Financeiro</th>
+                            <th id="total-saldo-financeiro">0</th>
+                            <th><button class="reset-button" data-type="saldo_financeiro">Resetar</button></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div id="outras-despesas-operacionais">
+                <h2>Outras Despesas Operacionais</h2>
+                <form class="item-form" data-type="outras_despesas_operacionais">
+                    <label for="description">Descrição:</label>
+                    <input type="text" class="description" required>
+                    <label for="quantity">Quantidade:</label>
+                    <input type="number" class="quantity" required>
+                    <label for="unit-price">Valor Unitário:</label>
+                    <input type="number" class="unit-price" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                            <th>Reset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outras-despesas-operacionais-rows">
+                        <!-- Outras Despesas Operacionais inseridas aparecerão aqui -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total Outras Despesas Operacionais</th>
+                            <th id="total-outras-despesas-operacionais">0</th>
+                            <th><button class="reset-button" data-type="outras_despesas_operacionais">Resetar</button></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div id="despesas-nao-operacionais">
+                <h2>Despesas Não Operacionais</h2>
+                <form class="item-form" data-type="despesas_nao_operacionais">
+                    <label for="description">Descrição:</label>
+                    <input type="text" class="description" required>
+                    <label for="quantity">Quantidade:</label>
+                    <input type="number" class="quantity" required>
+                    <label for="unit-price">Valor Unitário:</label>
+                    <input type="number" class="unit-price" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                            <th>Reset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="despesas-nao-operacionais-rows">
+                        <!-- Despesas Não Operacionais inserirão aqui -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total Despesas Não Operacionais</th>
+                            <th id="total-despesas-nao-operacionais">0</th>
+                            <th><button class="reset-button" data-type="despesas_nao_operacionais">Resetar</button></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div id="impostos">
+                <h2>Impostos</h2>
+                <form class="item-form" data-type="impostos">
+                    <label for="description">Descrição:</label>
+                    <input type="text" class="description" required>
+                    <label for="quantity">Quantidade:</label>
+                    <input type="number" class="quantity" required>
+                    <label for="unit-price">Valor Unitário:</label>
+                    <input type="number" class="unit-price" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Quantidade</th>
+                            <th>Valor Unitário</th>
+                            <th>Valor Total</th>
+                            <th>Reset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="impostos-rows">
+                        <!-- Impostos inserirão aqui -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total Impostos</th>
+                            <th id="total-impostos">0</th>
+                            <th><button class="reset-button" data-type="impostos">Resetar</button></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div id="total-liquido">
+                <h2>Total Líquido</h2>
+                <p id="total-result">0</p>
             </div>
         </div>
     </div>
 
+    <div id="dre" class="page">
+        <h1>Demonstração do Resultado do Exercício (DRE)</h1>
+        <button id="to-prestacao-contas-button">Ver Prestação de Contas</button>
+        <button id="save-dre-button">Salvar DRE</button>
+        <button id="reset-dre-button">Resetar DRE</button>
+        <div id="dre-container">
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="label">Receita de Vendas:</td>
+                        <td id="dre-receita-vendas">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Custo das Mercadorias Vendidas (CMV):</td>
+                        <td id="dre-cmv">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Resultado Bruto:</td>
+                        <td id="dre-resultado-bruto">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Despesas Comerciais:</td>
+                        <td id="dre-despesas-comerciais">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Despesas Administrativas:</td>
+                        <td id="dre-despesas-administrativas">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Saldo Financeiro:</td>
+                        <td id="dre-saldo-financeiro">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Outras Despesas Operacionais:</td>
+                        <td id="dre-outras-despesas-operacionais">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Resultado Operacional:</td>
+                        <td id="dre-resultado-operacional">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Despesas Não Operacionais:</td>
+                        <td id="dre-despesas-nao-operacionais">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Imposto de Renda e Contribuição Social:</td>
+                        <td id="dre-impostos">0</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Resultado Líquido:</td>
+                        <td id="dre-resultado-liquido">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script>
-        function calculateTotal(sectionId) {
-            const section = document.getElementById(sectionId);
-            const quantity = section.querySelector('input[id$="quantidade"]').value;
-            const valor = section.querySelector('input[id$="valor"]').value;
-            const total = section.querySelector('input[id$="total"]');
-            total.value = quantity * valor;
+        // Função de login
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const passwordconst password = document.getElementById('password').value;
+            if (username === 'líder' && password === 'lider123') {
+                document.getElementById('login-page').classList.remove('active');
+                document.getElementById('prestacao-contas').classList.add('active');
+            } else {
+                alert('Login ou senha incorretos!');
+            }
+        });
+
+        let totalReceitaVendas = parseFloat(localStorage.getItem('totalReceitaVendas')) || 0;
+        let totalCMV = parseFloat(localStorage.getItem('totalCMV')) || 0;
+        let totalDespesasComerciais = parseFloat(localStorage.getItem('totalDespesasComerciais')) || 0;
+        let totalDespesasAdministrativas = parseFloat(localStorage.getItem('totalDespesasAdministrativas')) || 0;
+        let totalSaldoFinanceiro = parseFloat(localStorage.getItem('totalSaldoFinanceiro')) || 0;
+        let totalOutrasDespesasOperacionais = parseFloat(localStorage.getItem('totalOutrasDespesasOperacionais')) || 0;
+        let totalDespesasNaoOperacionais = parseFloat(localStorage.getItem('totalDespesasNaoOperacionais')) || 0;
+        let totalImpostos = parseFloat(localStorage.getItem('totalImpostos')) || 0;
+        let totalLiquido = parseFloat(localStorage.getItem('totalLiquido')) || 0;
+
+        document.querySelectorAll('.item-form').forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const type = form.getAttribute('data-type');
+                const description = form.querySelector('.description').value;
+                const quantity = parseFloat(form.querySelector('.quantity').value);
+                const unitPrice = parseFloat(form.querySelector('.unit-price').value);
+                const amount = quantity * unitPrice;
+                
+                if (description && quantity && unitPrice) {
+                    const tableRow = document.createElement('tr');
+                    tableRow.innerHTML = `<td>${description}</td><td>${quantity}</td><td>${unitPrice.toFixed(2)}</td><td>${amount.toFixed(2)}</td><td><button class="reset-item-button">Resetar</button></td>`;
+                    
+                    if (type === 'receita_vendas') {
+                        document.getElementById('receita-vendas-rows').appendChild(tableRow);
+                        totalReceitaVendas += amount;
+                        document.getElementById('total-receita-vendas').textContent = totalReceitaVendas.toFixed(2);
+                        localStorage.setItem('totalReceitaVendas', totalReceitaVendas.toFixed(2));
+                    } else if (type === 'cmv') {
+                        document.getElementById('cmv-rows').appendChild(tableRow);
+                        totalCMV += amount;
+                        document.getElementById('total-cmv').textContent = totalCMV.toFixed(2);
+                        localStorage.setItem('totalCMV', totalCMV.toFixed(2));
+                    } else if (type === 'despesas_comerciais') {
+                        document.getElementById('despesas-comerciais-rows').appendChild(tableRow);
+                        totalDespesasComerciais += amount;
+                        document.getElementById('total-despesas-comerciais').textContent = totalDespesasComerciais.toFixed(2);
+                        localStorage.setItem('totalDespesasComerciais', totalDespesasComerciais.toFixed(2));
+                    } else if (type === 'despesas_administrativas') {
+                        document.getElementById('despesas-administrativas-rows').appendChild(tableRow);
+                        totalDespesasAdministrativas += amount;
+                        document.getElementById('total-despesas-administrativas').textContent = totalDespesasAdministrativas.toFixed(2);
+                        localStorage.setItem('totalDespesasAdministrativas', totalDespesasAdministrativas.toFixed(2));
+                    } else if (type === 'saldo_financeiro') {
+                        document.getElementById('saldo-financeiro-rows').appendChild(tableRow);
+                        totalSaldoFinanceiro += amount;
+                        document.getElementById('total-saldo-financeiro').textContent = totalSaldoFinanceiro.toFixed(2);
+                        localStorage.setItem('totalSaldoFinanceiro', totalSaldoFinanceiro.toFixed(2));
+                    } else if (type === 'outras_despesas_operacionais') {
+                        document.getElementById('outras-despesas-operacionais-rows').appendChild(tableRow);
+                        totalOutrasDespesasOperacionais += amount;
+                        document.getElementById('total-outras-despesas-operacionais').textContent = totalOutrasDespesasOperacionais.toFixed(2);
+                        localStorage.setItem('totalOutrasDespesasOperacionais', totalOutrasDespesasOperacionais.toFixed(2));
+                    } else if (type === 'despesas_nao_operacionais') {
+                        document.getElementById('despesas-nao-operacionais-rows').appendChild(tableRow);
+                        totalDespesasNaoOperacionais += amount;
+                        document.getElementById('total-despesas-nao-operacionais').textContent = totalDespesasNaoOperacionais.toFixed(2);
+                        localStorage.setItem('totalDespesasNaoOperacionais', totalDespesasNaoOperacionais.toFixed(2));
+                    } else if (type === 'impostos') {
+                        document.getElementById('impostos-rows').appendChild(tableRow);
+                        totalImpostos += amount;
+                        document.getElementById('total-impostos').textContent = totalImpostos.toFixed(2);
+                        localStorage.setItem('totalImpostos', totalImpostos.toFixed(2));
+                    }
+                    
+                    // Atualiza o total líquido
+                    totalLiquido = totalReceitaVendas - totalCMV - totalDespesasComerciais - totalDespesasAdministrativas - totalSaldoFinanceiro - totalOutrasDespesasOperacionais - totalDespesasNaoOperacionais - totalImpostos;
+                    document.getElementById('total-result').textContent = totalLiquido.toFixed(2);
+                    localStorage.setItem('totalLiquido', totalLiquido.toFixed(2));
+
+                    // Atualiza a DRE
+                    updateDRE();
+
+                    // Adiciona evento ao botão de reset do item
+                    tableRow.querySelector('.reset-item-button').addEventListener('click', function() {
+                        resetItem(type, amount, tableRow);
+                    });
+
+                    // Limpa o formulário
+                    form.querySelector('.description').value = '';
+                    form.querySelector('.quantity').value = '';
+                    form.querySelector('.unit-price').value = '';
+                }
+            });
+        });
+
+        document.querySelectorAll('.reset-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const type = button.getAttribute('data-type');
+                resetType(type);
+            });
+        });
+
+        document.getElementById('reset-dre-button').addEventListener('click', function() {
+            resetDRE();
+        });
+
+        function resetItem(type, amount, row) {
+            if (type === 'receita_vendas') {
+                totalReceitaVendas -= amount;
+                document.getElementById('total-receita-vendas').textContent = totalReceitaVendas.toFixed(2);
+                localStorage.setItem('totalReceitaVendas', totalReceitaVendas.toFixed(2));
+            } else if (type === 'cmv') {
+                totalCMV -= amount;
+                document.getElementById('total-cmv').textContent = totalCMV.toFixed(2);
+                localStorage.setItem('totalCMV', totalCMV.toFixed(2));
+            } else if (type === 'despesas_comerciais') {
+                totalDespesasComerciais -= amount;
+                document.getElementById('total-despesas-comerciais').textContent = totalDespesasComerciais.toFixed(2);
+                localStorage.setItem('totalDespesasComerciais', totalDespesasComerciais.toFixed(2));
+            } else if (type === 'despesas_administrativas') {
+                totalDespesasAdministrativas -= amount;
+                document.getElementById('total-despesas-administrativas').textContent = totalDespesasAdministrativas.toFixed(2);
+                localStorage.setItem('totalDespesasAdministrativas', totalDespesasAdministrativas.toFixed(2));
+            } else if (type === 'saldo_financeiro') {
+                totalSaldoFinanceiro -= amount;
+                document.getElementById('total-saldo-financeiro').textContent = totalSaldoFinanceiro.toFixed(2);
+                localStorage.setItem('totalSaldoFinanceiro', totalSaldoFinanceiro.toFixed(2));
+            } else if (type === 'outras_despesas_operacionais') {
+                totalOutrasDespesasOperacionais -= amount;
+                document.getElementById('total-outras-despesas-operacionais').textContent = totalOutrasDespesasOperacionais.toFixed(2);
+                localStorage.setItem('totalOutrasDespesasOperacionais', totalOutrasDespesasOperacionais.toFixed(2));
+            } else if (type === 'despesas_nao_operacionais') {
+                totalDespesasNaoOperacionais -= amount;
+                document.getElementById('total-despesas-nao-operacionais').textContent = totalDespesasNaoOperacionais.toFixed(2);
+                localStorage.setItem('totalDespesasNaoOperacionais', totalDespesasNaoOperacionais.toFixed(2));
+            } else if (type === 'impostos') {
+                totalImpostos -= amount;
+                document.getElementById('total-impostos').textContent = totalImpostos.toFixed(2);
+                localStorage.setItem('totalImpostos', totalImpostos.toFixed(2));
+            }
+            
+            // Atualiza o total líquido
+            totalLiquido = totalReceitaVendas - totalCMV - totalDespesasComerciais - totalDespesasAdministrativas - totalSaldoFinanceiro - totalOutrasDespesasOperacionais - totalDespesasNaoOperacionais - totalImpostos;
+            document.getElementById('total-result').textContent = totalLiquido.toFixed(2);
+            localStorage.setItem('totalLiquido', totalLiquido.toFixed(2));
+            
+            // Remove a linha da tabela
+            row.remove();
+            
+            // Atualiza a DRE
             updateDRE();
         }
 
-        function resetSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            section.querySelector('input[id$="descricao"]').value = '';
-            section.querySelector('input[id$="quantidade"]').value = '';
-            section.querySelector('input[id$="valor"]').value = '';
-            section.querySelector('input[id$="total"]').value = '';
+        function resetType(type) {
+            if (type === 'receita_vendas') {
+                totalReceitaVendas = 0;
+                document.getElementById('total-receita-vendas').textContent = '0';
+                localStorage.setItem('totalReceitaVendas', '0');
+                document.getElementById('receita-vendas-rows').innerHTML = '';
+            } else if (type === 'cmv') {
+                totalCMV = 0;
+                document.getElementById('total-cmv').textContent = '0';
+                localStorage.setItem('totalCMV', '0');
+                document.getElementById('cmv-rows').innerHTML = '';
+            } else if (type === 'despesas_comerciais') {
+                totalDespesasComerciais = 0;
+                document.getElementById('total-despesas-comerciais').textContent = '0';
+                localStorage.setItem('totalDespesasComerciais', '0');
+                document.getElementById('despesas-comerciais-rows').innerHTML = '';
+            } else if (type === 'despesas_administrativas') {
+                totalDespesasAdministrativas = 0;
+                document.getElementById('total-despesas-administrativas').textContent = '0';
+                localStorage.setItem('totalDespesasAdministrativas', '0');
+                document.getElementById('despesas-administrativas-rows').innerHTML = '';
+            } else if (type === 'saldo_financeiro') {
+                totalSaldoFinanceiro = 0;
+                document.getElementById('total-saldo-financeiro').textContent = '0';
+                localStorage.setItem('totalSaldoFinanceiro', '0');
+                document.getElementById('saldo-financeiro-rows').innerHTML = '';
+            } else if (type === 'outras_despesas_operacionais') {
+                totalOutrasDespesasOperacionais = 0;
+                document.getElementById('total-outras-despesas-operacionais').textContent = '0';
+                localStorage.setItem('totalOutrasDespesasOperacionais', '0');
+                document.getElementById('outras-despesas-operacionais-rows').innerHTML = '';
+            } else if (type === 'despesas_nao_operacionais') {
+                totalDespesasNaoOperacionais = 0;
+                document.getElementById('total-despesas-nao-operacionais').textContent = '0';
+                localStorage.setItem('totalDespesasNaoOperacionais', '0');
+                document.getElementById('despesas-nao-operacionais-rows').innerHTML = '';
+            } else if (type === 'impostos') {
+                totalImpostos = 0;
+                document.getElementById('total-impostos').textContent = '0';
+                localStorage.setItem('totalImpostos', '0');
+                document.getElementById('impostos-rows').innerHTML = '';
+            }
+            
+            // Atualiza o total líquido
+            totalLiquido = totalReceitaVendas - totalCMV - totalDespesasComerciais - totalDespesasAdministrativas - totalSaldoFinanceiro - totalOutrasDespesasOperacionais - totalDespesasNaoOperacionais - totalImpostos;
+            document.getElementById('total-result').textContent = totalLiquido.toFixed(2);
+            localStorage.setItem('totalLiquido', totalLiquido.toFixed(2));
+            
+            // Atualiza a DRE
+            updateDRE();
+        }
+
+        function resetDRE() {
+            totalReceitaVendas = 0;
+            totalCMV = 0;
+            totalDespesasComerciais = 0;
+            totalDespesasAdministrativas = 0;
+            totalSaldoFinanceiro = 0;
+            totalOutrasDespesasOperacionais = 0;
+            totalDespesasNaoOperacionais = 0;
+            totalImpostos = 0;
+            totalLiquido = 0;
+
+            localStorage.setItem('totalReceitaVendas', '0');
+            localStorage.setItem('totalCMV', '0');
+            localStorage.setItem('totalDespesasComerciais', '0');
+            localStorage.setItem('totalDespesasAdministrativas', '0');
+            localStorage.setItem('totalSaldoFinanceiro', '0');
+            localStorage.setItem('totalOutrasDespesasOperacionais', '0');
+            localStorage.setItem('totalDespesasNaoOperacionais', '0');
+            localStorage.setItem('totalImpostos', '0');
+            localStorage.setItem('totalLiquido', '0');
+
             updateDRE();
         }
 
         function updateDRE() {
-            const receitaVendas = document.getElementById('receita-total').value || 0;
-            document.getElementById('dre-receita-vendas').value = receitaVendas;
-            // Update other DRE fields
-            const resultadoLiquido = receitaVendas; // Placeholder for actual calculation
-            document.getElementById('dre-resultado-liquido').value = resultadoLiquido;
+            const resultadoBruto = totalReceitaVendas - totalCMV;
+            const resultadoOperacional = resultadoBruto - totalDespesasComerciais - totalDespesasAdministrativas - totalOutrasDespesasOperacionais + totalSaldoFinanceiro;
+
+            document.getElementById('dre-receita-vendas').textContent = totalReceitaVendas.toFixed(2);
+            document.getElementById('dre-cmv').textContent = totalCMV.toFixed(2);
+            document.getElementById('dre-resultado-bruto').textContent = resultadoBruto.toFixed(2);
+            document.getElementById('dre-despesas-comerciais').textContent = totalDespesasComerciais.toFixed(2);
+            document.getElementById('dre-despesas-administrativas').textContent = totalDespesasAdministrativas.toFixed(2);
+            document.getElementById('dre-saldo-financeiro').textContent = totalSaldoFinanceiro.toFixed(2);
+            document.getElementById('dre-outras-despesas-operacionais').textContent = totalOutrasDespesasOperacionais.toFixed(2);
+            document.getElementById('dre-resultado-operacional').textContent = resultadoOperacional.toFixed(2);
+            document.getElementById('dre-despesas-nao-operacionais').textContent = totalDespesasNaoOperacionais.toFixed(2);
+            document.getElementById('dre-impostos').textContent = totalImpostos.toFixed(2);
+            document.getElementById('dre-resultado-liquido').textContent = totalLiquido.toFixed(2);
         }
 
-        document.querySelectorAll('input[type="number"]').forEach(input => {
-            input.addEventListener('input', () => {
-                const sectionId = input.closest('.section').id;
-                calculateTotal(sectionId);
-            });
+        // Navegação entre telas
+        document.getElementById('to-dre-button').addEventListener('click', function() {
+            document.getElementById('prestacao-contas').classList.remove('active');
+            document.getElementById('dre').classList.add('active');
         });
+
+        document.getElementById('to-prestacao-contas-button').addEventListener('click', function() {
+            document.getElementById('dre').classList.remove('active');
+            document.getElementById('prestacao-contas').classList.add('active');
+        });
+
+        // Função para salvar dados
+        function saveData(filename) {
+            const data = {
+                receitaVendas: totalReceitaVendas,
+                cmv: totalCMV,
+                despesasComerciais: totalDespesasComerciais,
+                despesasAdministrativas: totalDespesasAdministrativas,
+                saldoFinanceiro: totalSaldoFinanceiro,
+                outrasDespesasOperacionais: totalOutrasDespesasOperacionais,
+                despesasNaoOperacionais: totalDespesasNaoOperacionais,
+                impostos: totalImpostos,
+                resultadoLiquido: totalLiquido
+            };
+            localStorage.setItem(filename, JSON.stringify(data));
+            alert(`Dados salvos como ${filename}`);
+        }
+
+        // Salvar lançamentos
+        document.getElementById('save-button').addEventListener('click', function() {
+            const filename = prompt("Digite o nome do arquivo para salvar os lançamentos:");
+            if (filename) {
+                saveData(filename);
+            }
+        });
+
+        // Salvar DRE
+        document.getElementById('save-dre-button').addEventListener('click', function() {
+            const filename = prompt("Digite o nome do arquivo para salvar a DRE:");
+            if (filename) {
+                saveData(filename);
+            }
+        });
+
+        // Inicializar a página de prestação de contas como a ativa
+        document.getElementById('prestacao-contas').classList.add('active');
     </script>
 </body>
 </html>
