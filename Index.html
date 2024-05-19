@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prestação de Contas</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #0000ff, #ffff00);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+        h2 {
+            background-color: #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .section {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .field {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .field input {
+            width: 25%;
+            padding: 5px;
+        }
+        .field button {
+            width: 10%;
+            padding: 5px;
+            background-color: grey;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .field button:hover {
+            background-color: darkgrey;
+        }
+        @media (max-width: 768px) {
+            .field input, .field button {
+                width: 45%;
+            }
+            .field {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Prestação de Contas</h2>
+
+        <div id="receita-vendas" class="section">
+            <h3>Receita de Vendas</h3>
+            <div class="field">
+                <input type="text" id="receita-descricao" placeholder="Descrição">
+                <input type="number" id="receita-quantidade" placeholder="Quantidade">
+                <input type="number" id="receita-valor" placeholder="Valor Unitário">
+                <input type="number" id="receita-total" placeholder="Total" readonly>
+                <button onclick="resetSection('receita-vendas')">Reset</button>
+            </div>
+        </div>
+
+        <!-- Repeat similar sections for other categories -->
+        
+        <!-- DRE Section -->
+        <div id="dre" class="section">
+            <h2>DRE (Demonstração do Resultado do Exercício)</h2>
+            <div class="field">
+                <label>Receita de Vendas</label>
+                <input type="number" id="dre-receita-vendas" readonly>
+            </div>
+            <!-- Repeat for other summary fields -->
+            <div class="field">
+                <label>Resultado Líquido</label>
+                <input type="number" id="dre-resultado-liquido" readonly>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateTotal(sectionId) {
+            const section = document.getElementById(sectionId);
+            const quantity = section.querySelector('input[id$="quantidade"]').value;
+            const valor = section.querySelector('input[id$="valor"]').value;
+            const total = section.querySelector('input[id$="total"]');
+            total.value = quantity * valor;
+            updateDRE();
+        }
+
+        function resetSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.querySelector('input[id$="descricao"]').value = '';
+            section.querySelector('input[id$="quantidade"]').value = '';
+            section.querySelector('input[id$="valor"]').value = '';
+            section.querySelector('input[id$="total"]').value = '';
+            updateDRE();
+        }
+
+        function updateDRE() {
+            const receitaVendas = document.getElementById('receita-total').value || 0;
+            document.getElementById('dre-receita-vendas').value = receitaVendas;
+            // Update other DRE fields
+            const resultadoLiquido = receitaVendas; // Placeholder for actual calculation
+            document.getElementById('dre-resultado-liquido').value = resultadoLiquido;
+        }
+
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', () => {
+                const sectionId = input.closest('.section').id;
+                calculateTotal(sectionId);
+            });
+        });
+    </script>
+</body>
+</html>
